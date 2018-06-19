@@ -57,6 +57,8 @@ contract OwnerCtrl is Ownable{
 
     }
     /**@dev This function is used to get token balance at all addreses
+      *@param tokenAddress Address of the user
+      *@return bal Balance 
      */
     function getETHBalance(address tokenAddress) view public returns (uint){
         ERC20 t = ERC20(tokenAddress); 
