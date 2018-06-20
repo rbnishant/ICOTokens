@@ -42,7 +42,7 @@ contract Airdrop is Ownable {
       *@param _token Address of the token contract
       *@return true  
      */
-    function WithdrawBalance(uint256 _token) public onlyOwner returns (bool success){
+    function WithdrawTokenBalance(uint256 _token) public onlyOwner returns (bool success){
         require(Token.transfer(owner, Token.balanceof(address(this))));
         return true;
     }
@@ -50,7 +50,7 @@ contract Airdrop is Ownable {
       *@param _token Address of the token contract
       *@return true 
      */
-    function WithdrawBalance(uint256 _token) public onlyOwner returns (bool success){
+    function WithdrawEtherBalance(uint256 _token) public onlyOwner returns (bool success){
         require(_token.transfer(owner, _token.balanceof(address(this))));
         return true;
     }
