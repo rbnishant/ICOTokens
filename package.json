@@ -21,6 +21,10 @@
   },
   "homepage": "https://github.com/SecureBlocks/ICOTokens#readme",
   "dependencies": {
-    "openzeppelin-solidity": "1.10.0"
+    "fast-csv": "2.4.1",
+    "openzeppelin-solidity": "1.10.0",
+    "truffle-hdwallet-provider": "0.0.5",
+    "truffle-hdwallet-provider-privkey": "0.2.0",
+    "web3": "1.0.0-beta.34"
   }
 }
