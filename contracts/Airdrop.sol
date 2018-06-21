@@ -21,10 +21,10 @@ contract Airdrop is Ownable {
       *@param _token Array of the tokens
       *@return tokens Calling function to send the tokens
      */
-    function transferToMutipleAddress(address[] _investorsAdd, uint256[] _tokenVal) public onlyOwner  returns (bool success){
-        require(_investorsAdd.length == _tokenVal.length);
+    function airdropTokenDistributionMulti(address[] _investorsAdd, uint256[] _tokenVal) public onlyOwner  returns (bool success){
+        require(_investorsAdd.length == _tokenVal.length, "Input array's length mismatch");
         for(uint i = 0; i < _investorsAdd.length; i++ ){
-            require(Token.transfer(_investorsAdd[i], _tokenVal[i]));
+            require(airdropTokenDistribution(_investorsAdd[i], _tokenVal[i]));
         }
         return true;
     }
@@ -34,8 +34,8 @@ contract Airdrop is Ownable {
       *@param _token Array of tokens to be send
       *@return bal Balance 
      */
-    function transferToAddress(address _investorsAdd, uint256 _tokenVal) public onlyOwner returns (bool success){
-        require(_investorsAdd != owner);
+    function airdropTokenDistribution(address _investorsAdd, uint256 _tokenVal) public onlyOwner returns (bool success){
+        require(_investorsAdd != owner, "Reciever should not be the owner of the contract");
         require(Token.transfer(_investorsAdd, _tokenVal));
         return true;
     }
@@ -52,8 +52,8 @@ contract Airdrop is Ownable {
       *@param _token Address of the token contract
       *@return true 
      */
-    function withdrawEtherBalance(address _etherAddress) public onlyOwner returns (bool success){
-        _etherAddress.transfer(address(this).balance);
+    function withdrawEtherBalance() public onlyOwner returns (bool success){
+        owner.transfer(address(this).balance);
         return true;
     }
 }
