@@ -9,7 +9,7 @@ module.exports = function(deployer, network, accounts){
         web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
     }
     if(network == 'ropsten'){
-        web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+        web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/g5xfoQ0jFSE9S5LwM1Ei'))
     }
 
     return deployer.deploy(Faucet, {from: accounts[0]}).then(() => {
