@@ -244,7 +244,7 @@ async function setAllocation() {
   console.log("************************************************************************************************");
   console.log("OBJECT WITH EVERY USER AND THEIR UPDATED TIMES: \n\n", investorObjectLookup)
   console.log("************************************************************************************************");
-  console.log("LIST OF ALL INVESTORS WHITELISTED: \n\n", investorAddress_Events)
+  console.log("LIST OF ALL INVESTORS WHO GOT AIRDROP TOKEN: \n\n", investorAddress_Events)
 
   let missingDistribs = [];
   for (let l = 0; l < fullFileData.length; l++) {
@@ -260,7 +260,7 @@ async function setAllocation() {
     console.log("************************************************************************************************");
   } else {
     console.log("\n************************************************************************************************");
-    console.log("All accounts passed through from the CSV were successfully whitelisted, because we were able to read them all from events")
+    console.log("All accounts passed through from the CSV were successfully get the airdrop token, because we were able to read them all from events")
     console.log("************************************************************************************************");
   }
   // console.log(`Run 'node scripts/verify_airdrop.js ${polyDistribution.address} > scripts/data/review.csv' to get a log of all the accounts that were distributed the airdrop tokens.`)
