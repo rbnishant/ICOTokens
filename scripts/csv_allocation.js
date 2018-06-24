@@ -5,8 +5,13 @@ var Web3 = require('web3');
 let chalk = require('chalk');
 
 /////////////////// RUNTIME ARGUMENT ////
+
+////////////////////////////USER INPUTS//////////////////////////////////////////
 let BATCH_SIZE = process.argv.slice(2)[0];
-if(!BATCH_SIZE) BATCH_SIZE = 40;
+if(!BATCH_SIZE) BATCH_SIZE = 70;
+let NETWORK_SELECTED = process.argv.slice(2)[1]; // Selected network
+if(NETWORK_SELECTED == '') NETWORK_SELECTED = 15;
+// '3' for ropsten
 
 
 let airdropDistribution;
@@ -31,7 +36,7 @@ if (typeof web3 !== 'undefined') {
 try {
     airdropContractABI = JSON.parse(fs.readFileSync('./build/contracts/Airdrop.json').toString()).abi;
     tokenContractABI = JSON.parse(fs.readFileSync('./build/contracts/Faucet.json').toString()).abi;
-    airdropContractAddress = JSON.parse(fs.readFileSync('./build/contracts/Airdrop.json').toString()).networks[15].address;
+    airdropContractAddress = JSON.parse(fs.readFileSync('./build/contracts/Airdrop.json').toString()).networks[NETWORK_SELECTED].address;
 } catch(error) {
     console.log('\x1b[31m%s\x1b[0m', "Couldn't find contracts' artifacts. Make sure you ran truffle compile first");
     return;
@@ -158,7 +163,17 @@ async function setAllocation() {
         tokenArray.push(distribData[i][j][1])
       }
 
-      let r = await airdropDistribution.methods.airdropTokenDistributionMulti(investorArray, tokenArray).send({ from: Issuer, gas: 5000000, gasPrice: DEFAULT_GAS_PRICE })
+      let gas = await airdropDistribution.methods.airdropTokenDistributionMulti(investorArray, tokenArray).estimateGas({from: Issuer});
+      let gasCalculated = gas+ ((10 * gas)/100);
+      let EthUsed = gasCalculated * DEFAULT_GAS_PRICE;
+      let ownerBalance = await web3.eth.getBalance(Issuer);
+
+      if (parseInt(ownerBalance) < parseFloat(EthUsed)) {
+        console.log(chalk.red(`${Issuer} have not enough balance to process the transaction. need ${web3.utils.fromWei(EthUsed)} ETH to execute the transaction`)); 
+        process.exit();
+      }
+
+      let r = await airdropDistribution.methods.airdropTokenDistributionMulti(investorArray, tokenArray).send({ from: Issuer, gas: Math.round(gasCalculated) , gasPrice: DEFAULT_GAS_PRICE })
       console.log(`Batch ${i} - Attempting to distribute the tokens accounts:\n\n`, investorArray, "\n\n");
       console.log("---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------");
       console.log("Token distribution transaxction was successful.", r.gasUsed, "gas used. Spent:", web3.utils.fromWei(BigNumber(r.gasUsed * DEFAULT_GAS_PRICE).toString(), "ether"), "Ether");
