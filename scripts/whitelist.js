@@ -3,19 +3,21 @@ var csv = require('fast-csv');
 var BigNumber = require('bignumber.js');
 const Web3 = require('web3');
 const chalk = require('chalk');
+const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
 
 
 ////////////////////////////USER INPUTS//////////////////////////////////////////
 let BATCH_SIZE = process.argv.slice(2)[0];
 if(!BATCH_SIZE) BATCH_SIZE = 70;
 let NETWORK_SELECTED = process.argv.slice(2)[1]; // Selected network
-if(NETWORK_SELECTED == '') NETWORK_SELECTED = 15;
+if(!NETWORK_SELECTED) NETWORK_SELECTED = 15;
 
 /////////////////////////////ARTIFACTS//////////////////////////////////////////
 
 let airdropABI;
 let aridropAddress;
 let airdrop;
+const privKey = "9F82B55CC2F2B061E7CE5DB75AFC7D902969D5A2A9DE1086AFC9EF153EFC831A";
 
 try {
    airdropABI = JSON.parse(require('fs').readFileSync('./build/contracts/Airdrop.json').toString()).abi;
@@ -31,8 +33,9 @@ if (typeof web3 !== 'undefined') {
   web3 = new Web3(web3.currentProvider);
 } else {
   // set the provider you want from Web3.providers
-  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-  //web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/g5xfoQ0jFSE9S5LwM1Ei'));
+  // web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  const provider = new HDWalletProvider(privKey, 'https://ropsten.infura.io/I7P2ErGiQjuq4jNp41OE');
+  web3 = new Web3(provider);
 }
 
 
@@ -123,8 +126,9 @@ function readFile() {
 
 ////////////////////////MAIN FUNCTION COMMUNICATING TO BLOCKCHAIN
 async function setInvestors() {
-  accounts = await web3.eth.getAccounts();
-  Issuer = accounts[0]
+  // accounts = await web3.eth.getAccounts();
+  // Issuer = accounts[0];
+  Issuer = "0xf8c7b132cd6bd4ff0e4260a4185e25a0fd49cea3";
 
   console.log(`
     -------------------------------------------------------

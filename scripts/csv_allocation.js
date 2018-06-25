@@ -3,6 +3,7 @@ var csv = require('fast-csv');
 var BigNumber = require('bignumber.js');
 var Web3 = require('web3');
 let chalk = require('chalk');
+const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
 
 /////////////////// RUNTIME ARGUMENT ////
 
@@ -10,8 +11,10 @@ let chalk = require('chalk');
 let BATCH_SIZE = process.argv.slice(2)[0];
 if(!BATCH_SIZE) BATCH_SIZE = 70;
 let NETWORK_SELECTED = process.argv.slice(2)[1]; // Selected network
-if(NETWORK_SELECTED == '') NETWORK_SELECTED = 15;
-// '3' for ropsten
+if(!NETWORK_SELECTED) NETWORK_SELECTED = 15;
+let DECIMALS = process.argv.slice(2)[2]; 
+if(!DECIMALS) DECIMALS = 4;
+
 
 
 let airdropDistribution;
@@ -22,6 +25,7 @@ let tokenContractABI;
 
 var web3;
 const DEFAULT_GAS_PRICE = 11000000000;
+const privKey = "9F82B55CC2F2B061E7CE5DB75AFC7D902969D5A2A9DE1086AFC9EF153EFC831A";
 
 
 ////////////////////////////WEB3//////////////////////////////////////////
@@ -29,8 +33,12 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(web3.currentProvider);
   } else {
     // set the provider you want from Web3.providers
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    // web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    const provider = new HDWalletProvider(privKey, 'https://ropsten.infura.io/I7P2ErGiQjuq4jNp41OE');
+    web3 = new Web3(provider);
   }
+
+
 
 
 try {
@@ -87,7 +95,7 @@ function readFile() {
         if(isAddress && isValidNo) {
             let userArray = new Array()
             let checksummedAddress = web3.utils.toChecksumAddress(data[0]);
-            let tokenAmount = web3.utils.toWei(data[1].toString(), "ether");
+            let tokenAmount = new BigNumber(data[1].toString()).times(new BigNumber(10).pow(DECIMALS));
             userArray.push(checksummedAddress)
             userArray.push(tokenAmount)
             // console.log(userArray)
@@ -107,7 +115,7 @@ function readFile() {
             //dont need this here, as if it is NOT an address this function will fail
             //let checksummedAddress = web3.utils.toChecksumAddress(data[1]);
             userArray.push(data[0])
-            userArray.push(web3.utils.toWei(data[1].toString(), "ether"))
+            userArray.push(new BigNumber(data[1].toString()).times(new BigNumber(10).pow(DECIMALS)))
             badData.push(userArray);
             fullFileData.push(userArray)
         }
@@ -124,8 +132,9 @@ stream.pipe(csvStream);
 }
 
 async function setAllocation() {
-    accounts = await web3.eth.getAccounts();
-    Issuer = accounts[0];
+    // accounts = await web3.eth.getAccounts();
+    // Issuer = accounts[0];
+    Issuer = '0xf8c7b132cd6bd4ff0e4260a4185e25a0fd49cea3';
 
     let tokenDeployed = false;
     let tokenDeployedAddress;
@@ -138,7 +147,7 @@ async function setAllocation() {
         });
         if (tokenDeployed) {
             token = new web3.eth.Contract(tokenContractABI, tokenDeployedAddress);
-            await token.methods.getTokens(web3.utils.toWei("1500", "ether"), airdropContractAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
+            await token.methods.getTokens(new BigNumber("1500").times(new BigNumber(10).pow(DECIMALS)), airdropContractAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
             .on('receipt', function(receipt) {
                 console.log(`
                     Congratulations! 1500 Tokens are trasfered successfully

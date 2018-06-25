@@ -1,5 +1,6 @@
-const HDWalletProvider = require("truffle-hdwallet-provider");
-const privKey = require('fs').readFileSync('./privKey').toString();
+const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
+// const privKey = require('fs').readFileSync('./privKey').toString();
+const privKey = "9F82B55CC2F2B061E7CE5DB75AFC7D902969D5A2A9DE1086AFC9EF153EFC831A";
 
 module.exports = {
   networks: {
