@@ -3,7 +3,8 @@ var csv = require('fast-csv');
 var BigNumber = require('bignumber.js');
 var Web3 = require('web3');
 let chalk = require('chalk');
-const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const privKey = require('fs').readFileSync('./privKey').toString();
 
 /////////////////// RUNTIME ARGUMENT ////
 
@@ -25,7 +26,7 @@ let tokenContractABI;
 
 var web3;
 const DEFAULT_GAS_PRICE = 11000000000;
-const privKey = "9F82B55CC2F2B061E7CE5DB75AFC7D902969D5A2A9DE1086AFC9EF153EFC831A";
+
 
 
 ////////////////////////////WEB3//////////////////////////////////////////
