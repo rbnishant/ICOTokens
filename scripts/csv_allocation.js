@@ -133,10 +133,9 @@ stream.pipe(csvStream);
 }
 
 async function setAllocation() {
-    // accounts = await web3.eth.getAccounts();
-    // Issuer = accounts[0];
-    Issuer = '0xf8c7b132cd6bd4ff0e4260a4185e25a0fd49cea3';
-
+    accounts = await web3.eth.getAccounts();
+    Issuer = accounts[0];
+    
     let tokenDeployed = false;
     let tokenDeployedAddress;
     await airdropDistribution.methods.Token().call({from: Issuer}, function(error, result) {

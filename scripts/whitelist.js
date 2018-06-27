@@ -11,15 +11,19 @@ let BATCH_SIZE = process.argv.slice(2)[0];
 if(!BATCH_SIZE) BATCH_SIZE = 70;
 let NETWORK_SELECTED = process.argv.slice(2)[1]; // Selected network
 if(!NETWORK_SELECTED) NETWORK_SELECTED = 15;
+let DECIMALS = process.argv.slice(2)[2]; 
+if(!DECIMALS) DECIMALS = 4;
 
 /////////////////////////////ARTIFACTS//////////////////////////////////////////
 
 let airdropABI;
 let aridropAddress;
 let airdrop;
+let tokenContractABI;
 
 try {
    airdropABI = JSON.parse(require('fs').readFileSync('./build/contracts/Airdrop.json').toString()).abi;
+   tokenContractABI = JSON.parse(fs.readFileSync('./build/contracts/Faucet.json').toString()).abi;
    airdropAddress = JSON.parse(require('fs').readFileSync('./build/contracts/Airdrop.json').toString()).networks[NETWORK_SELECTED].address;
 } catch (err) {
   console.log('\x1b[31m%s\x1b[0m', "Couldn't find contracts' artifacts. Make sure you ran truffle compile first");
@@ -88,11 +92,13 @@ function readFile() {
   var csvStream = csv()
     .on("data", function (data) {
       let isAddress = web3.utils.isAddress(data[0]);
-      if (isAddress) {
+      let isValidNo = isValidToken(data[1]);
+      if (isAddress && isValidNo) {
         let userArray = new Array()
         let checksummedAddress = web3.utils.toChecksumAddress(data[0]);
-
-        userArray.push(checksummedAddress)
+        let tokenAmount = new BigNumber(data[1].toString()).times(new BigNumber(10).pow(DECIMALS));
+        userArray.push(checksummedAddress);
+        userArray.push(tokenAmount);
         // console.log(userArray)
         allocData.push(userArray);
         fullFileData.push(userArray);
@@ -108,6 +114,7 @@ function readFile() {
       } else {
         let userArray = new Array()
         userArray.push(data[0])
+        userArray.push(new BigNumber(data[1].toString()).times(new BigNumber(10).pow(DECIMALS)))
         badData.push(userArray);
         fullFileData.push(userArray)
       }
@@ -129,6 +136,30 @@ async function setInvestors() {
    Issuer = accounts[0];
   //Issuer = "0xf8c7b132cd6bd4ff0e4260a4185e25a0fd49cea3";
 
+  let tokenDeployed = false;
+  let tokenDeployedAddress;
+  await airdrop.methods.Token().call({from: Issuer}, function(error, result) {
+        if (result != "0x0000000000000000000000000000000000000000") {
+            console.log('\x1b[32m%s\x1b[0m', "Token deployed at address " + result + ".");
+            tokenDeployedAddress = result;
+            tokenDeployed = true;
+          }
+      });
+      if (tokenDeployed) {
+            token = new web3.eth.Contract(tokenContractABI, tokenDeployedAddress);
+            await token.methods.getTokens(new BigNumber("5000").times(new BigNumber(10).pow(DECIMALS)), airdropAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
+            .on('receipt', function(receipt) {
+                console.log(`
+                    Congratulations! 5000 Tokens are trasfered successfully
+                    Review it on Etherscan.
+                    TxHash: ${receipt.transactionHash}\n`);
+            })
+            .on("error", console.error);
+      } else {
+            console.log(chalk.red(`Token address is not set in to the airdrop contract`));
+            return;
+      }
+
   console.log(`
     -------------------------------------------------------
     ----- Sending buy/sell restrictions to blockchain -----
@@ -139,13 +170,15 @@ async function setInvestors() {
   for (let i = 0; i < distribData.length; i++) {
     try {
       let investorArray = [];
+      let tokenArray = [];
 
       //splitting the user arrays to be organized by input
       for (let j = 0; j < distribData[i].length; j++) {
         investorArray.push(distribData[i][j][0])
+        tokenArray.push(distribData[i][j][1])
       }
 
-      let gas = await airdrop.methods.whitelist(investorArray).estimateGas({from: Issuer});
+      let gas = await airdrop.methods.whitelist(investorArray,tokenArray).estimateGas({from: Issuer});
       let gasCalculated = gas+ ((10 * gas)/100);
       let EthUsed = gasCalculated * DEFAULT_GAS_PRICE;
       let ownerBalance = await web3.eth.getBalance(Issuer);
@@ -154,7 +187,7 @@ async function setInvestors() {
         console.log(chalk.red(`${Issuer} have not enough balance to process the transaction. need ${web3.utils.fromWei(EthUsed)} ETH to execute the transaction`)); 
         process.exit();
       }
-      let r = await airdrop.methods.whitelist(investorArray).send({ from: Issuer, gas: Math.round(gasCalculated), gasPrice: DEFAULT_GAS_PRICE })
+      let r = await airdrop.methods.whitelist(investorArray,tokenArray).send({ from: Issuer, gas: Math.round(gasCalculated), gasPrice: DEFAULT_GAS_PRICE })
       console.log(`Batch ${i} - Attempting to modifyWhitelist accounts:\n\n`, investorArray, "\n\n");
       console.log("---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------");
       console.log("Whitelist transaxction was successful.", r.gasUsed, "gas used. Spent:", web3.utils.fromWei(BigNumber(r.gasUsed * DEFAULT_GAS_PRICE).toString(), "ether"), "Ether");
@@ -184,10 +217,12 @@ async function setInvestors() {
     let combineArray = [];
 
     let investorAddress_Event = event_data[i].returnValues._investor;
+    let tokenAmount_Event = event_data[i].returnValues._amount;
     let atTime_event = event_data[i].returnValues._timestamp
     let blockNumber = event_data[i].blockNumber
 
     combineArray.push(investorAddress_Event);
+    combineArray.push(tokenAmount_Event);
     combineArray.push(blockNumber)
 
     investorData_Events.push(combineArray)
@@ -244,3 +279,10 @@ async function setInvestors() {
   }
 
 }
+
+function isValidToken(_tokenAmount) {
+  if(_tokenAmount != '' && parseInt(_tokenAmount) > 0)
+       return true;
+   return false;
+}
+

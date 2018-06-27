@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 //@title- ICO token application
 //@owner- SecureBlocks
 
@@ -12,22 +12,19 @@ contract Airdrop is Ownable {
     }
 
     ERC20 public Token;
-    uint256 public airdropAmount; 
 
     mapping(address => bool) public whitelisted;
     mapping(address => Investor) public investorDetails;
 
-    event LogWhitelisted(address _investor, uint256 _timestamp);
+    event LogWhitelisted(address _investor, uint256 _amount, uint256 _timestamp);
 
     /**
      * @dev constructor is getting tokens from the token contract
      * @param _token Address of the token
-     * @param _airdropAmount Amount which will be claimed by the user
      * @return ERC20 standard token 
      */
-    constructor(address _token, uint256 _airdropAmount) public {
+    constructor(address _token) public {
         Token = ERC20(_token);
-        airdropAmount = _airdropAmount;
     }
 
 
@@ -37,24 +34,25 @@ contract Airdrop is Ownable {
      * only be called by the owner
      */
 
-     function whitelist(address[] _investorAddresses) external onlyOwner {
-         require(_investorAddresses.length > 0);
-         for (uint i = 0; i < _investorAddresses.length; i++) {
-             whitelisted[_investorAddresses[i]] = true;
-             emit LogWhitelisted(_investorAddresses[i], now);
-         }
-     }
+    function whitelist(address[] _investorAddresses,uint256[] _tokenAmount) external onlyOwner {
+        require(_investorAddresses.length == _tokenAmount.length,"Input array's length mismatch");
+        for (uint i = 0; i < _investorAddresses.length; i++) {
+            whitelisted[_investorAddresses[i]] = true;
+            investorDetails[_investorAddresses[i]] = Investor(_tokenAmount[i],false);
+            emit LogWhitelisted(_investorAddresses[i], _tokenAmount[i], now);
+        }
+    }
 
      /**
       * @notice user can claim their airdrop tokens 
       */
 
-     function claimTokens() external {
+    function claimTokens() external {
         require(whitelisted[msg.sender]);
         require(!investorDetails[msg.sender].locked);
-        investorDetails[msg.sender] = Investor(airdropAmount, true);
-        Token.transfer(msg.sender, airdropAmount);
-     } 
+        investorDetails[msg.sender] = Investor(investorDetails[msg.sender].amount, true);
+        Token.transfer(msg.sender, investorDetails[msg.sender].amount);
+    } 
     
     /**
      * @dev This function is used to sort the array of address and token to send tokens 
