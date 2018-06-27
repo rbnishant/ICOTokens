@@ -267,12 +267,13 @@ async function setAllocation() {
     console.log("-- No Transfer event was found for the following data arrays. Please review them manually --")
     console.log(missingDistribs)
     console.log("************************************************************************************************");
+    process.exit();
   } else {
     console.log("\n************************************************************************************************");
     console.log("All accounts passed through from the CSV were successfully get the airdrop token, because we were able to read them all from events")
     console.log("************************************************************************************************");
+    process.exit();
   }
-  // console.log(`Run 'node scripts/verify_airdrop.js ${polyDistribution.address} > scripts/data/review.csv' to get a log of all the accounts that were distributed the airdrop tokens.`)
 
 }
 

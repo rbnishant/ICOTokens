@@ -272,10 +272,12 @@ async function setInvestors() {
     console.log("-- No LogModifyWhitelist event was found for the following data arrays. Please review them manually --")
     console.log(missingDistribs)
     console.log("************************************************************************************************");
+    process.exit();
   } else {
     console.log("\n************************************************************************************************");
     console.log("All accounts passed through from the CSV were successfully whitelisted, because we were able to read them all from events")
     console.log("************************************************************************************************");
+    process.exit();
   }
 
 }
