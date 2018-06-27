@@ -12,7 +12,7 @@ if(!BATCH_SIZE) BATCH_SIZE = 70;
 let NETWORK_SELECTED = process.argv.slice(2)[1]; // Selected network
 if(!NETWORK_SELECTED) NETWORK_SELECTED = 15;
 let DECIMALS = process.argv.slice(2)[2]; 
-if(!DECIMALS) DECIMALS = 4;
+if(!DECIMALS) DECIMALS = 18;
 
 /////////////////////////////ARTIFACTS//////////////////////////////////////////
 

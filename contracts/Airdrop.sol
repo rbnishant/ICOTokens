@@ -7,7 +7,7 @@ import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 contract Airdrop is Ownable {
 
     struct Investor {
-        uint256 amount;
+        uint256 amountLeft;
         bool locked;
     }
 
@@ -46,12 +46,12 @@ contract Airdrop is Ownable {
      /**
       * @notice user can claim their airdrop tokens 
       */
-
     function claimTokens() external {
         require(whitelisted[msg.sender]);
         require(!investorDetails[msg.sender].locked);
-        investorDetails[msg.sender] = Investor(investorDetails[msg.sender].amount, true);
-        Token.transfer(msg.sender, investorDetails[msg.sender].amount);
+        uint256 _amount = investorDetails[msg.sender].amountLeft;
+        investorDetails[msg.sender] = Investor(0, true);
+        Token.transfer(msg.sender, _amount);
     } 
     
     /**
