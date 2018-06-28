@@ -10,8 +10,9 @@ module.exports = {
       gas: 7900000,
     },
     mainnet: {
-      host: 'localhost',
-      port: 8545,
+      provider: new HDWalletProvider(privKey, "https://mainnet.infura.io/mROzXUBaQKkqSyXQFXLq"),
+      // host: 'localhost',
+      // port: 8545,
       network_id: '1', // Match any network id
       gas: 7900000,
       gasPrice: 10000000000
