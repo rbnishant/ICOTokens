@@ -32,10 +32,11 @@ const DEFAULT_GAS_PRICE = 11000000000;
 ////////////////////////////WEB3//////////////////////////////////////////
 if (typeof web3 !== 'undefined') {
     web3 = new Web3(web3.currentProvider);
-  } else {
-    // set the provider you want from Web3.providers
-    // web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  } else if(NETWORK_SELECTED == '3') {
     const provider = new HDWalletProvider(privKey, 'https://ropsten.infura.io/I7P2ErGiQjuq4jNp41OE');
+    web3 = new Web3(provider);
+  } else if(NETWORK_SELECTED == '1') {
+    const provider = new HDWalletProvider(privKey, 'https://mainnet.infura.io/mROzXUBaQKkqSyXQFXLq');
     web3 = new Web3(provider);
   }
 
@@ -44,7 +45,7 @@ if (typeof web3 !== 'undefined') {
 
 try {
     airdropContractABI = JSON.parse(fs.readFileSync('./build/contracts/Airdrop.json').toString()).abi;
-    tokenContractABI = JSON.parse(fs.readFileSync('./build/contracts/Faucet.json').toString()).abi;
+    tokenContractABI = JSON.parse(fs.readFileSync('./abi/tokenContractAbi.json').toString());
     airdropContractAddress = JSON.parse(fs.readFileSync('./build/contracts/Airdrop.json').toString()).networks[NETWORK_SELECTED].address;
 } catch(error) {
     console.log('\x1b[31m%s\x1b[0m', "Couldn't find contracts' artifacts. Make sure you ran truffle compile first");
@@ -144,22 +145,14 @@ async function setAllocation() {
             tokenDeployedAddress = result;
             tokenDeployed = true;
           }
-        });
-        if (tokenDeployed) {
+      });
+      if (tokenDeployed) {
             token = new web3.eth.Contract(tokenContractABI, tokenDeployedAddress);
-            await token.methods.getTokens(new BigNumber("1500").times(new BigNumber(10).pow(DECIMALS)), airdropContractAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
-            .on('receipt', function(receipt) {
-                console.log(`
-                    Congratulations! 1500 Tokens are trasfered successfully
-                    Review it on Etherscan.
-                    TxHash: ${receipt.transactionHash}\n`);
-            })
-            .on("error", console.error);
-        } else {
-            console.log(chalk.red(`Token address is not set in to the airdrop contract`));
-            return;
-        }
-
+      }
+      else {
+        console.log(chalk.red(`Token address is not set in to the airdrop contract`));
+        return;
+      }
         //this for loop will do the batches, so it should run 75, 75, 50 with 200
   for (let i = 0; i < distribData.length; i++) {
     try {
@@ -286,39 +279,4 @@ function isValidToken(_tokenAmount) {
 
 
 
-// async function setAllocation_temp() {
-    //     console.log(`
-    //         --------------------------------------------
-    //         ---------Performing allocations ------------
-    //         --------------------------------------------
-    //       `);
-        
-    //     for(var i = 0;i< distribData.length;i++){
-    //         try{
-    //           console.log("Attempting to allocate",distribDataToken[i],"to accounts:",distribData[i],"\n\n");
-    //           let code = await Contract.methods.transferToMutipleAddress(distribData[i],distribDataToken[i]).encodeABI();
-    //           let keys = {pubkey:"0xf8c7b132cd6bd4ff0e4260a4185e25a0fd49cea3",privkey:"9F82B55CC2F2B061E7CE5DB75AFC7D902969D5A2A9DE1086AFC9EF153EFC831A"};
-    //           var rawTx = {
-    //             nonce: await web3.eth.getTransactionCount(keys.pubkey),
-    //             gasPrice: 50000000000,
-    //             gasLimit: 4500000,
-    //             data: code
-    //           }
-    //           var tx = new Tx(rawTx);
-    //           tx.sign(keys.privkey);
-    //           var serializedTx = tx.serialize();
-    //           web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
-    //           .on('receipt',async(receipt)=>{
-    //             console.log("---------- ---------- ---------- ----------");
-    //             console.log("Allocation + transfer was successful.", receipt.gasUsed, "gas used. Spent:",receipt.gasUsed * gPrice,"wei");
-    //             console.log("---------- ---------- ---------- ----------\n\n")
-    //           })
-    //           .on('error',async(error)=>{
-    //             console.log("Error:",error);
-    //           })
-             
-    //         } catch (err){
-    //           console.log("ERROR:",err);
-    //         }
-    //     }
-    // }
+

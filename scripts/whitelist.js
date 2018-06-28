@@ -23,7 +23,7 @@ let tokenContractABI;
 
 try {
    airdropABI = JSON.parse(require('fs').readFileSync('./build/contracts/Airdrop.json').toString()).abi;
-   tokenContractABI = JSON.parse(fs.readFileSync('./build/contracts/Faucet.json').toString()).abi;
+   tokenContractABI = JSON.parse(fs.readFileSync('./abi/tokenContractAbi.json').toString());
    airdropAddress = JSON.parse(require('fs').readFileSync('./build/contracts/Airdrop.json').toString()).networks[NETWORK_SELECTED].address;
 } catch (err) {
   console.log('\x1b[31m%s\x1b[0m', "Couldn't find contracts' artifacts. Make sure you ran truffle compile first");
@@ -34,10 +34,11 @@ try {
 ////////////////////////////WEB3//////////////////////////////////////////
 if (typeof web3 !== 'undefined') {
   web3 = new Web3(web3.currentProvider);
-} else {
-  // set the provider you want from Web3.providers
-  // web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+} else if(NETWORK_SELECTED == '3') {
   const provider = new HDWalletProvider(privKey, 'https://ropsten.infura.io/I7P2ErGiQjuq4jNp41OE');
+  web3 = new Web3(provider);
+} else if(NETWORK_SELECTED == '1') {
+  const provider = new HDWalletProvider(privKey, 'https://mainnet.infura.io/mROzXUBaQKkqSyXQFXLq');
   web3 = new Web3(provider);
 }
 
@@ -134,7 +135,6 @@ function readFile() {
 async function setInvestors() {
    accounts = await web3.eth.getAccounts();
    Issuer = accounts[0];
-  //Issuer = "0xf8c7b132cd6bd4ff0e4260a4185e25a0fd49cea3";
 
   let tokenDeployed = false;
   let tokenDeployedAddress;
@@ -146,15 +146,7 @@ async function setInvestors() {
           }
       });
       if (tokenDeployed) {
-            token = new web3.eth.Contract(tokenContractABI, tokenDeployedAddress);
-            await token.methods.getTokens(new BigNumber("5000").times(new BigNumber(10).pow(DECIMALS)), airdropAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
-            .on('receipt', function(receipt) {
-                console.log(`
-                    Congratulations! 5000 Tokens are trasfered successfully
-                    Review it on Etherscan.
-                    TxHash: ${receipt.transactionHash}\n`);
-            })
-            .on("error", console.error);
+            token = new web3.eth.Contract(tokenContractABI, tokenDeployedAddress);   
       } else {
             console.log(chalk.red(`Token address is not set in to the airdrop contract`));
             return;

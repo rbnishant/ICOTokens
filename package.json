@@ -11,7 +11,8 @@
     "ganache-cli": "node_modules/.bin/ganache-cli -i 15 --gasLimit 90000000",
     "compile": "truffle compile --optimize-runs 200",
     "migrate-dev": "truffle migrate --network=development --reset --all",
-    "migrate-ropsten": "truffle migrate --network=ropsten --reset --all"
+    "migrate-ropsten": "truffle migrate --network=ropsten --reset --all",
+    "migrate-mainnet": "truffle migrate --network=mainnet --reset --all"
   },
   "repository": {
     "type": "git",
