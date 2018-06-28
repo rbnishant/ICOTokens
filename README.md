@@ -29,11 +29,11 @@
 2) Click on Send Ether & Tokens and select private key option then insert the private key and login into myetherwallet.
 
 3) After login user need to fill fields as follows:
-	To Address: <Airdrop contract address>
+	`To Address: <Airdrop contract address>
 	Amount To send:0
 	Gas Limit:80000 (If transaction fails increase the gas limit value)
  Then click on +Advanced:Add data and enter 
-    Data:0x48c54b9d
+    	Data:0x48c54b9d`
 
 4) After enter all details just click on the generate transaction user will receive the airdrop tokens in its address.
 
