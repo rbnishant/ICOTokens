@@ -2,7 +2,7 @@
 
 # Steps to run scripts:
 
-1) Create a file with name 'privKey' and add the seed words of the ethereum account in it. This address will become the owner address of the airdrop contract.
+1) Create a file with name `privKey` and add the seed words of the ethereum account in it. This address will become the owner address of the airdrop contract.
 
 2) Run command 'npm install'.
 
