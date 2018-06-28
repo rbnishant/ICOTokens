@@ -3,6 +3,8 @@ var csv = require('fast-csv');
 var BigNumber = require('bignumber.js');
 var Web3 = require('web3');
 let chalk = require('chalk');
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const privKey = require('fs').readFileSync('./privKey').toString();
 
 /////////////////// RUNTIME ARGUMENT ////
 
@@ -10,8 +12,10 @@ let chalk = require('chalk');
 let BATCH_SIZE = process.argv.slice(2)[0];
 if(!BATCH_SIZE) BATCH_SIZE = 70;
 let NETWORK_SELECTED = process.argv.slice(2)[1]; // Selected network
-if(NETWORK_SELECTED == '') NETWORK_SELECTED = 15;
-// '3' for ropsten
+if(!NETWORK_SELECTED) NETWORK_SELECTED = 15;
+let DECIMALS = process.argv.slice(2)[2]; 
+if(!DECIMALS) DECIMALS = 18;
+
 
 
 let airdropDistribution;
@@ -24,13 +28,18 @@ var web3;
 const DEFAULT_GAS_PRICE = 11000000000;
 
 
+
 ////////////////////////////WEB3//////////////////////////////////////////
 if (typeof web3 !== 'undefined') {
     web3 = new Web3(web3.currentProvider);
   } else {
     // set the provider you want from Web3.providers
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    // web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    const provider = new HDWalletProvider(privKey, 'https://ropsten.infura.io/I7P2ErGiQjuq4jNp41OE');
+    web3 = new Web3(provider);
   }
+
+
 
 
 try {
@@ -87,7 +96,7 @@ function readFile() {
         if(isAddress && isValidNo) {
             let userArray = new Array()
             let checksummedAddress = web3.utils.toChecksumAddress(data[0]);
-            let tokenAmount = web3.utils.toWei(data[1].toString(), "ether");
+            let tokenAmount = new BigNumber(data[1].toString()).times(new BigNumber(10).pow(DECIMALS));
             userArray.push(checksummedAddress)
             userArray.push(tokenAmount)
             // console.log(userArray)
@@ -107,7 +116,7 @@ function readFile() {
             //dont need this here, as if it is NOT an address this function will fail
             //let checksummedAddress = web3.utils.toChecksumAddress(data[1]);
             userArray.push(data[0])
-            userArray.push(web3.utils.toWei(data[1].toString(), "ether"))
+            userArray.push(new BigNumber(data[1].toString()).times(new BigNumber(10).pow(DECIMALS)))
             badData.push(userArray);
             fullFileData.push(userArray)
         }
@@ -126,7 +135,7 @@ stream.pipe(csvStream);
 async function setAllocation() {
     accounts = await web3.eth.getAccounts();
     Issuer = accounts[0];
-
+    
     let tokenDeployed = false;
     let tokenDeployedAddress;
     await airdropDistribution.methods.Token().call({from: Issuer}, function(error, result) {
@@ -138,7 +147,7 @@ async function setAllocation() {
         });
         if (tokenDeployed) {
             token = new web3.eth.Contract(tokenContractABI, tokenDeployedAddress);
-            await token.methods.getTokens(web3.utils.toWei("1500", "ether"), airdropContractAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
+            await token.methods.getTokens(new BigNumber("1500").times(new BigNumber(10).pow(DECIMALS)), airdropContractAddress).send({from: Issuer, gas: 200000, gasPrice: DEFAULT_GAS_PRICE})
             .on('receipt', function(receipt) {
                 console.log(`
                     Congratulations! 1500 Tokens are trasfered successfully
@@ -258,12 +267,13 @@ async function setAllocation() {
     console.log("-- No Transfer event was found for the following data arrays. Please review them manually --")
     console.log(missingDistribs)
     console.log("************************************************************************************************");
+    process.exit();
   } else {
     console.log("\n************************************************************************************************");
     console.log("All accounts passed through from the CSV were successfully get the airdrop token, because we were able to read them all from events")
     console.log("************************************************************************************************");
+    process.exit();
   }
-  // console.log(`Run 'node scripts/verify_airdrop.js ${polyDistribution.address} > scripts/data/review.csv' to get a log of all the accounts that were distributed the airdrop tokens.`)
 
 }
 

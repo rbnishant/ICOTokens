@@ -22,7 +22,7 @@ module.exports = {
       //port: 8545,
       network_id: '3', // Match any network id
       gas: 4500000,
-      gasPrice: 150000000000
+      gasPrice: 100000000000
     },
     kovan: {
       // provider: new HDWalletProvider(privKey, "http://localhost:8545"),
