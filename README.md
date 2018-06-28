@@ -1,5 +1,3 @@
-# ICOTokens
-
 # Steps to run scripts:
 
 1. Create a file with name `privKey` and add the seed words of the ethereum account in it. This address will become the owner address of the airdrop contract.
@@ -37,6 +35,7 @@
          Data:0x48c54b9d
 	
 4. After enter all details just click on the generate transaction user will receive the airdrop tokens in its address.
+
 
 
 
