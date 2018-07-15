@@ -6,7 +6,7 @@
 
 3. Add ethereum addresses and token amount in the file `airdrop.csv`(scripts->data->airdrop.csv). This file contains those addresses to which owner wants to send the tokens.
 
-4. Add ethereum addresses and token amount in the file `whitelist.csv`(scripts->data->airdrop.csv). All the addresses of this file will get whitelisted and whitelisted addresses can claim there tokens from myetherwallet.
+4. Add ethereum addresses and token amount in the file `whitelist.csv`(scripts->data->airdrop.csv). All the addresses of this file will get whitelisted and addresses can claim there tokens from myetherwallet.
 
 5. Change the `token address(tokenAddress)` in the `2_deploy_contracts.js`(migrations->2_deploy_contracts.js) file. This address will be used to set the token address in the airdrop contract.
 
