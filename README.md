@@ -24,7 +24,7 @@
 
 1. User need to login into [myetherwallet.com](https://www.myetherwallet.com/) using the address that is whitelisted.
 
-2. Click on Send Ether & Tokens and select private key option then insert the private key and login into myetherwallet.
+2. Click on Send Ether & Tokens and select private key option then insert the private key and login into the myetherwallet.
 
 3. After login user need to fill fields as follows:
 > 
