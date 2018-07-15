@@ -12,7 +12,7 @@
 
 6. Run command `npm run compile`. This command will compile the airdrop contract.
 
-7. Run command `npm run migrate-mainnet`. This command will deploy the airdrop contract to the mainnet and you will get the airdrop contract address in console.
+7. Run command `npm run migrate-mainnet`. This command will deploy the airdrop contract to the mainnet and you will get the airdrop contract address in the console.
 
 8. After contract migration you have to transfer tokens to the airdrop contract address as tokens will be distributed from that contract. If tokens won't be there in contract the transctions would get failed.
 
