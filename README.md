@@ -18,7 +18,7 @@
 
 9. After token transfer you need to run the scripts. Run command `node scripts/csv_allocation.js 70 1 18` in this `70` is the batch size `1` refers to the mainnet ethereum network and `18` is decimal. This script will transfer the tokens to the addresses which is set in the airdrop.csv file.
 
-10. Run command `node scripts/whitelist.js 70 1 18` in this `70` is the batch size `1` refers to the mainnet ethereum network and `18` is decimal. This script will whitelist addresses with desired tokens.
+10. Run command `node scripts/whitelist.js 70 1 18` in this `70` is the batch size `1` refers to the mainnet ethereum network and `18` is decimal. This script will whitelist addresses with the desired tokens.
 
 # Steps to claim tokens from myetherwallet
 
