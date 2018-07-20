@@ -4,7 +4,7 @@
 
 2. Run command `npm install`.
 
-3. Add ethereum addresses and amount in the file `airdrop.csv`(scripts->data->airdrop.csv). This file contains those addresses to which owner wants to send the tokens.
+3. Add ethereum addresses and token amount in the file `airdrop.csv`(scripts->data->airdrop.csv). This file contains those addresses to which owner wants to send the tokens.
 
 4. Add ethereum addresses and token amount in the file `whitelist.csv`(scripts->data->airdrop.csv). All the addresses of this file will get whitelisted and whitelisted addresses can claim there tokens from myetherwallet.
 
