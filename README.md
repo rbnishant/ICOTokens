@@ -16,7 +16,7 @@
 
 8. After contract migration you have to transfer tokens to the airdrop contract address as tokens will be distributed from that contract. If tokens won't be there in contract the transctions would get failed.
 
-9. After token transfer you need to run the scripts. Run command `node scripts/csv_allocation.js 70 1 18` in this `70` is the batch size `1` refers to the mainnet ethereum network and `18` is decimal. script will transfer the tokens to the addresses which is set in the airdrop.csv file.
+9. After token transfer you need to run the scripts. Run command `node scripts/csv_allocation.js 70 1 18` in this `70` is the batch size `1` refers to the mainnet ethereum network and `18` is decimal.This script will transfer the tokens to the addresses which is set in the airdrop.csv file.
 
 10. Run command `node scripts/whitelist.js 70 1 18` in this `70` is the batch size `1` refers to the mainnet ethereum network and `18` is decimal. This script will whitelist addresses with the desired tokens.
 
