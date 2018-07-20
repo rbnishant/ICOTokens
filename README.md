@@ -10,7 +10,7 @@
 
 5. Change the `token address(tokenAddress)` in the `2_deploy_contracts.js`(migrations->2_deploy_contracts.js) file. This address will be used to set the token address in the airdrop contract.
 
-6. Run command `npm run compile`. This command will compile the airdrop.
+6. Run command `npm run compile`. This command will compile the airdrop contract.
 
 7. Run command `npm run migrate-mainnet`. This command will deploy the airdrop contract to the mainnet and you will get the airdrop contract address in the console.
 
